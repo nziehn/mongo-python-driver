@@ -103,11 +103,7 @@ from bson.timestamp import Timestamp
 from bson.tz_util import utc
 
 
-try:
-    from bson import _cbson
-    _USE_C = True
-except ImportError:
-    _USE_C = False
+_USE_C = False
 
 
 EPOCH_AWARE = datetime.datetime.fromtimestamp(0, utc)
@@ -821,15 +817,22 @@ def _millis_to_datetime(millis, opts):
     diff = ((millis % 1000) + 1000) % 1000
     seconds = (millis - diff) // 1000
     micros = diff * 1000
-    if opts.tz_aware:
-        dt = EPOCH_AWARE + datetime.timedelta(seconds=seconds,
-                                              microseconds=micros)
-        if opts.tzinfo:
-            dt = dt.astimezone(opts.tzinfo)
-        return dt
-    else:
-        return EPOCH_NAIVE + datetime.timedelta(seconds=seconds,
-                                                microseconds=micros)
+
+    try:
+        if opts.tz_aware:
+            dt = EPOCH_AWARE + datetime.timedelta(seconds=seconds,
+                                                  microseconds=micros)
+            if opts.tzinfo:
+                dt = dt.astimezone(opts.tzinfo)
+            return dt
+        else:
+            return EPOCH_NAIVE + datetime.timedelta(seconds=seconds,
+                                                    microseconds=micros)
+    except:
+        if millis < 0:
+            return datetime.datetime(datetime.MINYEAR, 0, 0, 0, 0, 0)
+        else:
+            return datetime.datetime(datetime.MAXYEAR, 0, 0, 0, 0, 0)
 
 
 def _datetime_to_millis(dtm):
