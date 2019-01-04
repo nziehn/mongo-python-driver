@@ -830,9 +830,9 @@ def _millis_to_datetime(millis, opts):
                                                     microseconds=micros)
     except:
         if millis < 0:
-            return datetime.datetime(datetime.MINYEAR, 0, 0, 0, 0, 0)
+            return datetime.datetime(datetime.MINYEAR, 1, 1, 0, 0, 0)
         else:
-            return datetime.datetime(datetime.MAXYEAR, 0, 0, 0, 0, 0)
+            return datetime.datetime(datetime.MAXYEAR, 1, 1, 0, 0, 0)
 
 
 def _datetime_to_millis(dtm):
